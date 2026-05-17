@@ -110,7 +110,7 @@ function ModulesManager() {
                     </div>
                   </div>
                   <Switch 
-                    checked={module.is_active} 
+                    checked={!!module.is_active} 
                     onCheckedChange={(checked) => toggleModule.mutate({ id: module.id, is_active: checked })}
                   />
                 </CardHeader>
