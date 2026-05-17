@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { getPublicHomeData } from "@/lib/cms-queries";
 import { Header } from "@/components/public/Header";
 import { Footer } from "@/components/public/Footer";
@@ -12,46 +12,37 @@ import { StoreSection } from "@/components/public/StoreSection";
 import { FAQSection } from "@/components/public/FAQSection";
 import { TestimonialsSection } from "@/components/public/TestimonialsSection";
 
-const homeQueryOptions = () => {
-  const fetchHome = useServerFn(getPublicHomeData);
-  return queryOptions({
-    queryKey: ["public-home"],
-    queryFn: () => fetchHome(),
-  });
-};
-
 export const Route = createFileRoute("/")({
-  loader: ({ context }) => {
-    // We can't use useServerFn in loader, so we need to handle it differently 
-    // or just let useSuspenseQuery handle it on the client/SSR.
-    // TanStack Start handles this.
-  },
   component: Index,
 });
 
 function Index() {
-  const { data: homeData } = useSuspenseQuery(homeQueryOptions());
+  const fetchHome = useServerFn(getPublicHomeData);
+  const { data: homeData } = useSuspenseQuery({
+    queryKey: ["public-home"],
+    queryFn: () => fetchHome(),
+  });
+  
   const { modules, data } = homeData;
 
-  console.log("Home Data:", homeData);
-
   const renderModule = (module: any) => {
-    console.log("Rendering module:", module.slug, data[module.slug]?.length);
+    const moduleData = (data as any)[module.slug];
+    
     switch (module.slug) {
       case "banners":
-        return <BannerCarousel key={module.id} banners={data.banners} />;
+        return <BannerCarousel key={module.id} banners={moduleData} />;
       case "categories":
-        return <CategoryGrid key={module.id} categories={data.categories} />;
+        return <CategoryGrid key={module.id} categories={moduleData} />;
       case "kits":
-        return <FeaturedKits key={module.id} kits={data.kits} />;
+        return <FeaturedKits key={module.id} kits={moduleData} />;
       case "courses":
-        return <CourseSection key={module.id} courses={data.courses} />;
+        return <CourseSection key={module.id} courses={moduleData} />;
       case "stores":
-        return <StoreSection key={module.id} stores={data.stores} />;
+        return <StoreSection key={module.id} stores={moduleData} />;
       case "faq":
-        return <FAQSection key={module.id} faqs={data.faq} />;
+        return <FAQSection key={module.id} faqs={moduleData} />;
       case "testimonials":
-        return <TestimonialsSection key={module.id} testimonials={data.testimonials} />;
+        return <TestimonialsSection key={module.id} testimonials={moduleData} />;
       default:
         return null;
     }
