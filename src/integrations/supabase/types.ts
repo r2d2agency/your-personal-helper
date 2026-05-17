@@ -14,7 +14,303 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activity_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          module: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          module?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          module?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      banners: {
+        Row: {
+          button_link: string | null
+          button_text: string | null
+          display_order: number | null
+          end_date: string | null
+          id: string
+          image_desktop: string | null
+          image_mobile: string | null
+          is_active: boolean | null
+          start_date: string | null
+          subtitle: string | null
+          title: string | null
+        }
+        Insert: {
+          button_link?: string | null
+          button_text?: string | null
+          display_order?: number | null
+          end_date?: string | null
+          id?: string
+          image_desktop?: string | null
+          image_mobile?: string | null
+          is_active?: boolean | null
+          start_date?: string | null
+          subtitle?: string | null
+          title?: string | null
+        }
+        Update: {
+          button_link?: string | null
+          button_text?: string | null
+          display_order?: number | null
+          end_date?: string | null
+          id?: string
+          image_desktop?: string | null
+          image_mobile?: string | null
+          is_active?: boolean | null
+          start_date?: string | null
+          subtitle?: string | null
+          title?: string | null
+        }
+        Relationships: []
+      }
+      categories: {
+        Row: {
+          description: string | null
+          display_order: number | null
+          id: string
+          image_cover: string | null
+          is_active: boolean | null
+          name: string
+          whatsapp_message: string | null
+        }
+        Insert: {
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_cover?: string | null
+          is_active?: boolean | null
+          name: string
+          whatsapp_message?: string | null
+        }
+        Update: {
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_cover?: string | null
+          is_active?: boolean | null
+          name?: string
+          whatsapp_message?: string | null
+        }
+        Relationships: []
+      }
+      cms_modules: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_in_home: boolean | null
+          display_in_menu: boolean | null
+          icon: string | null
+          id: number
+          is_active: boolean | null
+          menu_order: number | null
+          name: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_in_home?: boolean | null
+          display_in_menu?: boolean | null
+          icon?: string | null
+          id?: number
+          is_active?: boolean | null
+          menu_order?: number | null
+          name: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_in_home?: boolean | null
+          display_in_menu?: boolean | null
+          icon?: string | null
+          id?: number
+          is_active?: boolean | null
+          menu_order?: number | null
+          name?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      courses: {
+        Row: {
+          description: string | null
+          event_date: string | null
+          id: string
+          image_cover: string | null
+          is_active: boolean | null
+          location: string | null
+          professor: string | null
+          status: string | null
+          title: string
+        }
+        Insert: {
+          description?: string | null
+          event_date?: string | null
+          id?: string
+          image_cover?: string | null
+          is_active?: boolean | null
+          location?: string | null
+          professor?: string | null
+          status?: string | null
+          title: string
+        }
+        Update: {
+          description?: string | null
+          event_date?: string | null
+          id?: string
+          image_cover?: string | null
+          is_active?: boolean | null
+          location?: string | null
+          professor?: string | null
+          status?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      kits: {
+        Row: {
+          approx_people: number | null
+          description: string | null
+          fest_type: string | null
+          id: string
+          image_cover: string | null
+          is_active: boolean | null
+          is_featured: boolean | null
+          items_included: string[] | null
+          name: string
+          store_id: string | null
+          theme: string | null
+        }
+        Insert: {
+          approx_people?: number | null
+          description?: string | null
+          fest_type?: string | null
+          id?: string
+          image_cover?: string | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          items_included?: string[] | null
+          name: string
+          store_id?: string | null
+          theme?: string | null
+        }
+        Update: {
+          approx_people?: number | null
+          description?: string | null
+          fest_type?: string | null
+          id?: string
+          image_cover?: string | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          items_included?: string[] | null
+          name?: string
+          store_id?: string | null
+          theme?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          full_name: string | null
+          id: string
+          role: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          full_name?: string | null
+          id: string
+          role?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          full_name?: string | null
+          id?: string
+          role?: string | null
+        }
+        Relationships: []
+      }
+      stores: {
+        Row: {
+          address: string | null
+          google_map_url: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          neighborhood: string | null
+          opening_hours: string | null
+          phone: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          google_map_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          neighborhood?: string | null
+          opening_hours?: string | null
+          phone?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          google_map_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          neighborhood?: string | null
+          opening_hours?: string | null
+          phone?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      whatsapp_clicks: {
+        Row: {
+          created_at: string | null
+          id: string
+          item_name: string | null
+          page_origin: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          item_name?: string | null
+          page_origin?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          item_name?: string | null
+          page_origin?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
