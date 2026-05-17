@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { SectionWrapper } from "./SectionWrapper";
 import { Calendar, MapPin, User } from "lucide-react";
@@ -22,12 +21,9 @@ export function CourseSection({ courses }: { courses: Course[] }) {
       subtitle="Cursos e Workshops"
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {courses.map((course, i) => (
-          <motion.div
+        {courses.map((course) => (
+          <div
             key={course.id}
-            initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
             className="flex flex-col md:flex-row bg-white rounded-[2rem] overflow-hidden border border-gray-100 hover:border-primary/20 transition-all duration-300"
           >
             <div className="w-full md:w-48 h-48 md:h-auto overflow-hidden shrink-0">
@@ -64,7 +60,7 @@ export function CourseSection({ courses }: { courses: Course[] }) {
                 Mais Informações
               </Button>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </SectionWrapper>

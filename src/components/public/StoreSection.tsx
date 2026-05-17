@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { SectionWrapper } from "./SectionWrapper";
 import { MapPin, Clock, Phone } from "lucide-react";
@@ -21,16 +20,12 @@ export function StoreSection({ stores }: { stores: Store[] }) {
       subtitle="Nossas Lojas"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {stores.map((store, i) => (
-          <motion.div
+        {stores.map((store) => (
+          <div
             key={store.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.1 }}
-            className="group"
+            className="group h-full"
           >
-            <div className="bg-white p-8 rounded-[2rem] border-2 border-transparent group-hover:border-primary transition-all duration-300 h-full flex flex-col justify-between space-y-8">
+            <div className="bg-white p-8 rounded-[2rem] border-2 border-transparent group-hover:border-primary transition-all duration-300 h-full flex flex-col justify-between space-y-8 shadow-sm hover:shadow-xl">
               <div className="space-y-6">
                 <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center group-hover:bg-primary transition-colors">
                   <MapPin className="w-6 h-6 text-primary group-hover:text-white" />
@@ -58,7 +53,7 @@ export function StoreSection({ stores }: { stores: Store[] }) {
                 Ver no Mapa
               </Button>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </SectionWrapper>
