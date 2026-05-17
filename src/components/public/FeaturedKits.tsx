@@ -1,7 +1,6 @@
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { SectionWrapper } from "./SectionWrapper";
-import { Users, Layout } from "lucide-react";
+import { Users } from "lucide-react";
 
 interface Kit {
   id: string;
@@ -22,13 +21,9 @@ export function FeaturedKits({ kits }: { kits: Kit[] }) {
       bg="gray"
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {kits.map((kit, i) => (
-          <motion.div
+        {kits.map((kit) => (
+          <div
             key={kit.id}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.1 }}
             className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 group"
           >
             <div className="aspect-[4/3] overflow-hidden relative">
@@ -56,7 +51,7 @@ export function FeaturedKits({ kits }: { kits: Kit[] }) {
                 Ver Detalhes
               </Button>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
       <div className="mt-12 text-center">

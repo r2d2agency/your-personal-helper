@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { SectionWrapper } from "./SectionWrapper";
 import { Quote } from "lucide-react";
 
@@ -19,14 +18,10 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
       subtitle="Depoimentos"
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {testimonials.map((t, i) => (
-          <motion.div
+        {testimonials.map((t) => (
+          <div
             key={t.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.1 }}
-            className="bg-gray-50 p-8 rounded-[2rem] relative space-y-6 flex flex-col justify-between"
+            className="bg-[var(--gray-50)] p-8 rounded-[2rem] relative space-y-6 flex flex-col justify-between"
           >
             <Quote className="absolute top-6 right-8 w-12 h-12 text-primary/10" />
             <p className="text-muted-foreground italic leading-relaxed z-10">
@@ -45,7 +40,7 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
                 <p className="text-xs text-muted-foreground uppercase tracking-widest">{t.role || "Cliente"}</p>
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </SectionWrapper>

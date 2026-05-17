@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { SectionWrapper } from "./SectionWrapper";
 
@@ -18,14 +17,8 @@ export function CategoryGrid({ categories }: { categories: Category[] }) {
       subtitle="Categorias"
     >
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-        {categories.map((cat, i) => (
-          <motion.div
-            key={cat.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.1 }}
-          >
+        {categories.map((cat) => (
+          <div key={cat.id}>
             <Link 
               to={`/categorias/${cat.id}`}
               className="group block text-center space-y-4"
@@ -41,7 +34,7 @@ export function CategoryGrid({ categories }: { categories: Category[] }) {
                 {cat.name}
               </h3>
             </Link>
-          </motion.div>
+          </div>
         ))}
       </div>
     </SectionWrapper>
