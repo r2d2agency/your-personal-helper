@@ -13,6 +13,54 @@ export const getModules = createServerFn({ method: "GET" })
     return data;
   });
 
+export const getPublicHomeData = createServerFn({ method: "GET" })
+  .handler(async () => {
+    // 1. Get active home modules
+    const { data: modules, error: modError } = await supabase
+      .from("cms_modules")
+      .select("*")
+      .eq("is_active", true)
+      .eq("display_in_home", true)
+      .order("menu_order", { ascending: true });
+
+    if (modError) throw modError;
+
+    // 2. Fetch data for each module in parallel
+    // We only fetch if the module is active in home
+    const slugs = modules.map(m => m.slug);
+    
+    const [
+      banners,
+      categories,
+      kits,
+      courses,
+      stores,
+      faq,
+      testimonials
+    ] = await Promise.all([
+      slugs.includes('banners') ? supabase.from("banners").select("*").eq("is_active", true).order("display_order") : Promise.resolve({ data: [] }),
+      slugs.includes('categories') ? supabase.from("categories").select("*").eq("is_active", true).order("display_order") : Promise.resolve({ data: [] }),
+      slugs.includes('kits') ? supabase.from("kits").select("*").eq("is_active", true).eq("is_featured", true) : Promise.resolve({ data: [] }),
+      slugs.includes('courses') ? supabase.from("courses").select("*").eq("is_active", true).order("event_date") : Promise.resolve({ data: [] }),
+      slugs.includes('stores') ? supabase.from("stores").select("*").eq("is_active", true) : Promise.resolve({ data: [] }),
+      slugs.includes('faq') ? supabase.from("faq").select("*").eq("is_active", true).order("display_order") : Promise.resolve({ data: [] }),
+      slugs.includes('testimonials') ? supabase.from("testimonials").select("*").eq("is_active", true) : Promise.resolve({ data: [] }),
+    ]);
+
+    return {
+      modules,
+      data: {
+        banners: banners.data || [],
+        categories: categories.data || [],
+        kits: kits.data || [],
+        courses: courses.data || [],
+        stores: stores.data || [],
+        faq: faq.data || [],
+        testimonials: testimonials.data || [],
+      }
+    };
+  });
+
 export const getStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async () => {
