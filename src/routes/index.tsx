@@ -27,6 +27,7 @@ function Index() {
 
   const renderModule = (module: any) => {
     const moduleData = (data as any)[module.slug];
+    if (!moduleData || moduleData.length === 0) return null;
     
     switch (module.slug) {
       case "banners":
