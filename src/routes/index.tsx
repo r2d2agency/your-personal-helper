@@ -33,7 +33,10 @@ function Index() {
   const { data: homeData } = useSuspenseQuery(homeQueryOptions());
   const { modules, data } = homeData;
 
+  console.log("Home Data:", homeData);
+
   const renderModule = (module: any) => {
+    console.log("Rendering module:", module.slug, data[module.slug]?.length);
     switch (module.slug) {
       case "banners":
         return <BannerCarousel key={module.id} banners={data.banners} />;
