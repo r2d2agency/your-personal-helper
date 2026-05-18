@@ -1,0 +1,237 @@
+--- activity_logs ---
+                           Table "public.activity_logs"
+   Column   |           Type           | Collation | Nullable |      Default      
+------------+--------------------------+-----------+----------+-------------------
+ id         | uuid                     |           | not null | gen_random_uuid()
+ user_id    | uuid                     |           |          | 
+ action     | text                     |           | not null | 
+ module     | text                     |           |          | 
+ details    | jsonb                    |           |          | 
+ created_at | timestamp with time zone |           |          | now()
+Indexes:
+    "activity_logs_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "activity_logs_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id)
+Policies:
+    POLICY "Editors can view activity logs" FOR SELECT
+      TO authenticated
+      USING ((has_role(auth.uid(), 'admin'::text) OR has_role(auth.uid(), 'editor'::text)))
+    POLICY "Users can insert activity logs" FOR INSERT
+      WITH CHECK ((auth.uid() IS NOT NULL))
+
+--- banners ---
+                               Table "public.banners"
+    Column     |           Type           | Collation | Nullable |      Default      
+---------------+--------------------------+-----------+----------+-------------------
+ id            | uuid                     |           | not null | gen_random_uuid()
+ title         | text                     |           |          | 
+ subtitle      | text                     |           |          | 
+ image_desktop | text                     |           |          | 
+ image_mobile  | text                     |           |          | 
+ button_text   | text                     |           |          | 
+ button_link   | text                     |           |          | 
+ start_date    | timestamp with time zone |           |          | 
+ end_date      | timestamp with time zone |           |          | 
+ is_active     | boolean                  |           |          | true
+ display_order | integer                  |           |          | 0
+Indexes:
+    "banners_pkey" PRIMARY KEY, btree (id)
+Policies:
+    POLICY "Editors can manage banners"
+      TO authenticated
+      USING ((has_role(auth.uid(), 'admin'::text) OR has_role(auth.uid(), 'editor'::text)))
+    POLICY "Public can view active banners" FOR SELECT
+      USING ((is_active = true))
+
+--- categories ---
+                       Table "public.categories"
+      Column      |  Type   | Collation | Nullable |      Default      
+------------------+---------+-----------+----------+-------------------
+ id               | uuid    |           | not null | gen_random_uuid()
+ name             | text    |           | not null | 
+ description      | text    |           |          | 
+ image_cover      | text    |           |          | 
+ whatsapp_message | text    |           |          | 
+ is_active        | boolean |           |          | true
+ display_order    | integer |           |          | 0
+Indexes:
+    "categories_pkey" PRIMARY KEY, btree (id)
+Policies:
+    POLICY "Editors can manage categories"
+      TO authenticated
+      USING ((has_role(auth.uid(), 'admin'::text) OR has_role(auth.uid(), 'editor'::text)))
+    POLICY "Public can view active categories" FOR SELECT
+      USING ((is_active = true))
+
+--- cms_modules ---
+                                         Table "public.cms_modules"
+     Column      |           Type           | Collation | Nullable |                 Default                 
+-----------------+--------------------------+-----------+----------+-----------------------------------------
+ id              | integer                  |           | not null | nextval('cms_modules_id_seq'::regclass)
+ name            | text                     |           | not null | 
+ slug            | text                     |           | not null | 
+ description     | text                     |           |          | 
+ icon            | text                     |           |          | 
+ is_active       | boolean                  |           |          | true
+ display_in_menu | boolean                  |           |          | true
+ display_in_home | boolean                  |           |          | false
+ menu_order      | integer                  |           |          | 0
+ created_at      | timestamp with time zone |           |          | now()
+ updated_at      | timestamp with time zone |           |          | now()
+Indexes:
+    "cms_modules_pkey" PRIMARY KEY, btree (id)
+    "cms_modules_slug_key" UNIQUE CONSTRAINT, btree (slug)
+Policies:
+    POLICY "Editors can manage modules"
+      TO authenticated
+      USING ((has_role(auth.uid(), 'admin'::text) OR has_role(auth.uid(), 'editor'::text)))
+    POLICY "Public can view active modules" FOR SELECT
+      USING ((is_active = true))
+
+--- courses ---
+                              Table "public.courses"
+   Column    |           Type           | Collation | Nullable |      Default      
+-------------+--------------------------+-----------+----------+-------------------
+ id          | uuid                     |           | not null | gen_random_uuid()
+ title       | text                     |           | not null | 
+ description | text                     |           |          | 
+ image_cover | text                     |           |          | 
+ event_date  | timestamp with time zone |           |          | 
+ location    | text                     |           |          | 
+ professor   | text                     |           |          | 
+ status      | text                     |           |          | 'em_breve'::text
+ is_active   | boolean                  |           |          | true
+Indexes:
+    "courses_pkey" PRIMARY KEY, btree (id)
+Policies:
+    POLICY "Editors can manage courses"
+      TO authenticated
+      USING ((has_role(auth.uid(), 'admin'::text) OR has_role(auth.uid(), 'editor'::text)))
+    POLICY "Public can view active courses" FOR SELECT
+      USING ((is_active = true))
+
+--- faq ---
+                                 Table "public.faq"
+    Column     |           Type           | Collation | Nullable |      Default      
+---------------+--------------------------+-----------+----------+-------------------
+ id            | uuid                     |           | not null | gen_random_uuid()
+ question      | text                     |           | not null | 
+ answer        | text                     |           | not null | 
+ display_order | integer                  |           |          | 0
+ is_active     | boolean                  |           |          | true
+ created_at    | timestamp with time zone |           |          | now()
+Indexes:
+    "faq_pkey" PRIMARY KEY, btree (id)
+Policies:
+    POLICY "Editors can manage FAQ"
+      TO authenticated
+      USING ((has_role(auth.uid(), 'admin'::text) OR has_role(auth.uid(), 'editor'::text)))
+    POLICY "Public can view active FAQ" FOR SELECT
+      USING ((is_active = true))
+
+--- kits ---
+                         Table "public.kits"
+     Column     |  Type   | Collation | Nullable |      Default      
+----------------+---------+-----------+----------+-------------------
+ id             | uuid    |           | not null | gen_random_uuid()
+ name           | text    |           | not null | 
+ theme          | text    |           |          | 
+ description    | text    |           |          | 
+ items_included | text[]  |           |          | 
+ image_cover    | text    |           |          | 
+ fest_type      | text    |           |          | 
+ approx_people  | integer |           |          | 
+ store_id       | uuid    |           |          | 
+ is_active      | boolean |           |          | true
+ is_featured    | boolean |           |          | false
+Indexes:
+    "kits_pkey" PRIMARY KEY, btree (id)
+Policies:
+    POLICY "Editors can manage kits"
+      TO authenticated
+      USING ((has_role(auth.uid(), 'admin'::text) OR has_role(auth.uid(), 'editor'::text)))
+    POLICY "Public can view active kits" FOR SELECT
+      USING ((is_active = true))
+
+--- profiles ---
+                  Table "public.profiles"
+   Column   | Type | Collation | Nullable |    Default     
+------------+------+-----------+----------+----------------
+ id         | uuid |           | not null | 
+ full_name  | text |           |          | 
+ avatar_url | text |           |          | 
+ role       | text |           |          | 'editor'::text
+Indexes:
+    "profiles_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "profiles_id_fkey" FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE
+Policies:
+    POLICY "Editors can view all profiles" FOR SELECT
+      TO authenticated
+      USING ((has_role(auth.uid(), 'admin'::text) OR has_role(auth.uid(), 'editor'::text)))
+    POLICY "Users can insert their own profile" FOR INSERT
+      WITH CHECK ((auth.uid() = id))
+    POLICY "Users can update their own profile" FOR UPDATE
+      USING ((auth.uid() = id))
+    POLICY "Users can view their own profile" FOR SELECT
+      USING ((auth.uid() = id))
+
+--- stores ---
+                        Table "public.stores"
+     Column     |  Type   | Collation | Nullable |      Default      
+----------------+---------+-----------+----------+-------------------
+ id             | uuid    |           | not null | gen_random_uuid()
+ name           | text    |           | not null | 
+ address        | text    |           |          | 
+ neighborhood   | text    |           |          | 
+ phone          | text    |           |          | 
+ whatsapp       | text    |           |          | 
+ opening_hours  | text    |           |          | 
+ google_map_url | text    |           |          | 
+ is_active      | boolean |           |          | true
+Indexes:
+    "stores_pkey" PRIMARY KEY, btree (id)
+Policies:
+    POLICY "Editors can manage stores"
+      TO authenticated
+      USING ((has_role(auth.uid(), 'admin'::text) OR has_role(auth.uid(), 'editor'::text)))
+    POLICY "Public can view active stores" FOR SELECT
+      USING ((is_active = true))
+
+--- testimonials ---
+                           Table "public.testimonials"
+   Column   |           Type           | Collation | Nullable |      Default      
+------------+--------------------------+-----------+----------+-------------------
+ id         | uuid                     |           | not null | gen_random_uuid()
+ name       | text                     |           | not null | 
+ role       | text                     |           |          | 
+ content    | text                     |           | not null | 
+ image_url  | text                     |           |          | 
+ is_active  | boolean                  |           |          | true
+ created_at | timestamp with time zone |           |          | now()
+Indexes:
+    "testimonials_pkey" PRIMARY KEY, btree (id)
+Policies:
+    POLICY "Editors can manage testimonials"
+      TO authenticated
+      USING ((has_role(auth.uid(), 'admin'::text) OR has_role(auth.uid(), 'editor'::text)))
+    POLICY "Public can view active testimonials" FOR SELECT
+      USING ((is_active = true))
+
+--- whatsapp_clicks ---
+                          Table "public.whatsapp_clicks"
+   Column    |           Type           | Collation | Nullable |      Default      
+-------------+--------------------------+-----------+----------+-------------------
+ id          | uuid                     |           | not null | gen_random_uuid()
+ item_name   | text                     |           |          | 
+ page_origin | text                     |           |          | 
+ created_at  | timestamp with time zone |           |          | now()
+Indexes:
+    "whatsapp_clicks_pkey" PRIMARY KEY, btree (id)
+Policies:
+    POLICY "Editors can view clicks" FOR SELECT
+      TO authenticated
+      USING ((has_role(auth.uid(), 'admin'::text) OR has_role(auth.uid(), 'editor'::text)))
+    POLICY "Public can insert clicks" FOR INSERT
+      WITH CHECK (true)
+
