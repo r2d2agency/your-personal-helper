@@ -13,7 +13,9 @@ const pool = new Pool({
 async function runMigrations() {
   console.log("Iniciando migrações no PostgreSQL...");
   try {
-    const schemaPath = path.join(__dirname, '../schema.sql');
+    const schemaPath = fs.existsSync(path.join(__dirname, '../schema.sql'))
+      ? path.join(__dirname, '../schema.sql')
+      : path.join(__dirname, 'schema.sql');
     if (fs.existsSync(schemaPath)) {
       const sql = fs.readFileSync(schemaPath, 'utf8');
       await pool.query(sql);
@@ -29,7 +31,16 @@ async function runMigrations() {
 }
 
 if (require.main === module) {
-  runMigrations();
+  runMigrations().then(() => {
+    if (process.env.START_HEALTH_SERVER === 'true') {
+      const http = require('http');
+      const port = process.env.PORT || 3001;
+      http.createServer((_, res) => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      }).listen(port, '0.0.0.0', () => console.log(`Backend ativo na porta ${port}`));
+    }
+  });
 }
 
 module.exports = { runMigrations };

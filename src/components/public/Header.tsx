@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, Phone, ShoppingBag } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import basmarLogo from "@/assets/logo-basmar.png";
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -16,18 +17,17 @@ export function Header() {
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white/80 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-5"
+      className={`fixed top-0 left-0 right-0 z-50 border-b border-border bg-card/95 backdrop-blur-md transition-all duration-300 ${
+        isScrolled ? "shadow-sm py-2" : "py-3"
       }`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-primary/20">
-            B
-          </div>
-          <span className="text-2xl font-black tracking-tight text-foreground">
-            BASMAR
-          </span>
+        <Link to="/" className="flex items-center">
+          <img
+            src={basmarLogo}
+            alt="Basmar Doces e Artigos de Festas"
+            className="h-14 w-auto object-contain"
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
@@ -39,7 +39,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          <Button variant="ghost" size="icon" className="md:hidden text-primary" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             <Menu className="w-6 h-6" />
           </Button>
           <Button className="hidden md:flex gap-2 rounded-full font-bold">
@@ -58,7 +58,7 @@ export function Header() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white border-t overflow-hidden"
+            className="md:hidden bg-card border-t overflow-hidden"
           >
             <div className="flex flex-col p-4 gap-4">
               <Link to="/" onClick={() => setMobileMenuOpen(false)}>Início</Link>

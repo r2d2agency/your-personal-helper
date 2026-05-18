@@ -29,5 +29,5 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-# Start server (runs migrations first via npm start)
-CMD ["npm", "start", "--", "--port", "3000", "--host", "0.0.0.0"]
+# Start server and run migrations first
+CMD ["sh", "-c", "node backend/index.cjs && npm run preview -- --host 0.0.0.0 --port ${PORT:-3000}"]

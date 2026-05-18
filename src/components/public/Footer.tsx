@@ -1,19 +1,19 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Youtube, Phone, Mail, MapPin } from "lucide-react";
+import basmarLogo from "@/assets/logo-basmar.png";
 
 export function Footer() {
   return (
-    <footer className="bg-foreground text-white pt-16 pb-8">
+    <footer className="bg-primary text-primary-foreground pt-16 pb-8">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="space-y-6">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-primary/20">
-                B
-              </div>
-              <span className="text-2xl font-black tracking-tight">
-                BASMAR
-              </span>
+            <Link to="/" className="inline-flex items-center rounded-md bg-white px-3 py-2">
+              <img
+                src={basmarLogo}
+                alt="Basmar Doces e Artigos de Festas"
+                className="h-14 w-auto object-contain"
+              />
             </Link>
             <p className="text-white/60 text-sm leading-relaxed">
               Tudo o que você precisa para tornar suas festas e eventos inesquecíveis. Desde descartáveis a kits completos de decoração.
@@ -51,15 +51,15 @@ export function Footer() {
             <h4 className="font-bold mb-6 text-lg">Contato</h4>
             <ul className="space-y-4 text-white/60 text-sm">
               <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-primary shrink-0" />
+                <MapPin className="w-5 h-5 text-white shrink-0" />
                 <span>Confira o endereço das nossas lojas físicas.</span>
               </li>
               <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-primary shrink-0" />
+                <Phone className="w-5 h-5 text-white shrink-0" />
                 <span>(00) 0000-0000</span>
               </li>
               <li className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-primary shrink-0" />
+                <Mail className="w-5 h-5 text-white shrink-0" />
                 <span>contato@basmar.com.br</span>
               </li>
             </ul>
