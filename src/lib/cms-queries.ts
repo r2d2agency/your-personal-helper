@@ -1,88 +1,61 @@
 import { createServerFn } from "@tanstack/react-start";
-import { supabase } from "@/integrations/supabase/client";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { query } from "./db";
 
 export const getModules = createServerFn({ method: "GET" })
   .handler(async () => {
-    const { data, error } = await supabase
-      .from("cms_modules")
-      .select("*")
-      .order("menu_order", { ascending: true });
-
-    if (error) throw error;
-    return data;
+    const { rows } = await query(
+      "SELECT * FROM cms_modules ORDER BY menu_order ASC"
+    );
+    return rows;
   });
 
 export const getPublicHomeData = createServerFn({ method: "GET" })
   .handler(async () => {
     // 1. Get active home modules
-    const { data: modules, error: modError } = await supabase
-      .from("cms_modules")
-      .select("*")
-      .eq("is_active", true)
-      .eq("display_in_home", true)
-      .order("menu_order", { ascending: true });
+    const { rows: modules } = await query(
+      "SELECT * FROM cms_modules WHERE is_active = true AND display_in_home = true ORDER BY menu_order ASC"
+    );
 
-    if (modError) throw modError;
-
-    // 2. Fetch data for each module in parallel
-    // We only fetch if the module is active in home
+    // 2. Fetch data for each module
     const slugs = modules.map(m => m.slug);
     
-    const [
-      banners,
-      categories,
-      kits,
-      courses,
-      stores,
-      faq,
-      testimonials
-    ] = await Promise.all([
-      slugs.includes('banners') ? supabase.from("banners").select("*").eq("is_active", true).order("display_order") : Promise.resolve({ data: [] }),
-      slugs.includes('categories') ? supabase.from("categories").select("*").eq("is_active", true).order("display_order") : Promise.resolve({ data: [] }),
-      slugs.includes('kits') ? supabase.from("kits").select("*").eq("is_active", true).eq("is_featured", true) : Promise.resolve({ data: [] }),
-      slugs.includes('courses') ? supabase.from("courses").select("*").eq("is_active", true).order("event_date") : Promise.resolve({ data: [] }),
-      slugs.includes('stores') ? supabase.from("stores").select("*").eq("is_active", true) : Promise.resolve({ data: [] }),
-      slugs.includes('faq') ? supabase.from("faq").select("*").eq("is_active", true).order("display_order") : Promise.resolve({ data: [] }),
-      slugs.includes('testimonials') ? supabase.from("testimonials").select("*").eq("is_active", true) : Promise.resolve({ data: [] }),
-    ]);
+    // Using simple queries for now to match the logic
+    const banners = slugs.includes('banners') ? (await query("SELECT * FROM banners WHERE is_active = true ORDER BY display_order")).rows : [];
+    const categories = slugs.includes('categories') ? (await query("SELECT * FROM categories WHERE is_active = true ORDER BY display_order")).rows : [];
+    const kits = slugs.includes('kits') ? (await query("SELECT * FROM kits WHERE is_active = true AND is_featured = true")).rows : [];
+    const courses = slugs.includes('courses') ? (await query("SELECT * FROM courses WHERE is_active = true ORDER BY event_date")).rows : [];
+    const stores = slugs.includes('stores') ? (await query("SELECT * FROM stores WHERE is_active = true")).rows : [];
+    const faq = slugs.includes('faq') ? (await query("SELECT * FROM faq WHERE is_active = true ORDER BY display_order")).rows : [];
+    const testimonials = slugs.includes('testimonials') ? (await query("SELECT * FROM testimonials WHERE is_active = true")).rows : [];
 
     return {
       modules,
       data: {
-        banners: banners.data || [],
-        categories: categories.data || [],
-        kits: kits.data || [],
-        courses: courses.data || [],
-        stores: stores.data || [],
-        faq: faq.data || [],
-        testimonials: testimonials.data || [],
+        banners,
+        categories,
+        kits,
+        courses,
+        stores,
+        faq,
+        testimonials,
       }
     };
   });
 
 export const getStats = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
   .handler(async () => {
-    const [
-      { count: banners },
-      { count: categories },
-      { count: kits },
-      { count: courses },
-      { count: modules }
-    ] = await Promise.all([
-      supabase.from("banners").select("*", { count: 'exact', head: true }).eq('is_active', true),
-      supabase.from("categories").select("*", { count: 'exact', head: true }).eq('is_active', true),
-      supabase.from("kits").select("*", { count: 'exact', head: true }).eq('is_active', true),
-      supabase.from("courses").select("*", { count: 'exact', head: true }).eq('is_active', true),
-      supabase.from("cms_modules").select("*", { count: 'exact', head: true }).eq('is_active', true),
-    ]);
+    // Simple count queries
+    const banners = (await query("SELECT COUNT(*) FROM banners WHERE is_active = true")).rows[0].count;
+    const categories = (await query("SELECT COUNT(*) FROM categories WHERE is_active = true")).rows[0].count;
+    const kits = (await query("SELECT COUNT(*) FROM kits WHERE is_active = true")).rows[0].count;
+    const courses = (await query("SELECT COUNT(*) FROM courses WHERE is_active = true")).rows[0].count;
+    const modules = (await query("SELECT COUNT(*) FROM cms_modules WHERE is_active = true")).rows[0].count;
 
     return {
-      banners: banners || 0,
-      categories: categories || 0,
-      kits: kits || 0,
-      courses: courses || 0,
-      modules: modules || 0,
+      banners: parseInt(banners) || 0,
+      categories: parseInt(categories) || 0,
+      kits: parseInt(kits) || 0,
+      courses: parseInt(courses) || 0,
+      modules: parseInt(modules) || 0,
     };
   });
