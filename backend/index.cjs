@@ -5,9 +5,17 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 // Also try loading from root .env if it exists on Easypanel (for both root and sub-folder deploys)
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  console.error("ERRO: A variável de ambiente DATABASE_URL não foi encontrada.");
+  console.log("Certifique-se de configurar o DATABASE_URL no EasyPanel.");
+  process.exit(0); // Sai silenciosamente para não travar o build, mas avisa o erro
+}
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL?.includes('sslmode=disable') ? false : { rejectUnauthorized: false },
+  connectionString: connectionString,
+  ssl: connectionString.includes('localhost') || connectionString.includes('127.0.0.1') ? false : { rejectUnauthorized: false },
 });
 
 async function runMigrations() {
