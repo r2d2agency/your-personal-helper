@@ -2,7 +2,7 @@ const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
-// Also try loading from root .env if it exists on Easypanel
+// Also try loading from root .env if it exists on Easypanel (for both root and sub-folder deploys)
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const pool = new Pool({
@@ -13,17 +13,22 @@ const pool = new Pool({
 async function runMigrations() {
   console.log("Iniciando migrações no PostgreSQL...");
   try {
-    const schemaPath = fs.existsSync(path.join(__dirname, '../schema.sql'))
-      ? path.join(__dirname, '../schema.sql')
-      : path.join(__dirname, 'schema.sql');
+    // Check local directory first (for sub-folder deploy)
+    let schemaPath = path.join(__dirname, 'schema.sql');
+    if (!fs.existsSync(schemaPath)) {
+      // Fallback to parent directory (for root deploy)
+      schemaPath = path.join(__dirname, '../schema.sql');
+    }
+    
     if (fs.existsSync(schemaPath)) {
       const sql = fs.readFileSync(schemaPath, 'utf8');
       await pool.query(sql);
       console.log("Migrações concluídas com sucesso!");
     } else {
-      console.warn("Arquivo schema.sql não encontrado.");
+      console.warn("Arquivo schema.sql não encontrado em:", schemaPath);
     }
   } catch (err) {
+
     console.error("Erro ao executar migrações:", err);
   } finally {
     await pool.end();
