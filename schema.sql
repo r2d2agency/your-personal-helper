@@ -140,4 +140,11 @@ INSERT INTO cms_modules (name, slug, description, icon, display_in_home, menu_or
 ('Cursos', 'courses', 'Gerenciar cursos e workshops', 'GraduationCap', true, 4),
 ('Lojas', 'stores', 'Gerenciar unidades físicas', 'MapPin', true, 5),
 ('FAQ', 'faq', 'Gerenciar perguntas frequentes', 'HelpCircle', true, 6),
-('Depoimentos', 'testimonials', 'Gerenciar depoimentos de clientes', 'MessageSquare', true, 7);
+('Depoimentos', 'testimonials', 'Gerenciar depoimentos de clientes', 'MessageSquare', true, 7)
+ON CONFLICT (slug) DO UPDATE SET
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    icon = EXCLUDED.icon,
+    display_in_home = EXCLUDED.display_in_home,
+    menu_order = EXCLUDED.menu_order,
+    updated_at = NOW();
