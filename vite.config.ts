@@ -14,20 +14,24 @@ export default defineConfig({
   },
   vite: {
     preview: {
-      allowedHosts: [
-        "blaster-basmar-frontend.isyhhh.easypanel.host",
-        "blaster-basmar-backend.isyhhh.easypanel.host",
-        "basmar.com.br",
-        "localhost"
-      ],
+      allowedHosts: true,
+      proxy: {
+        '/backend': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/backend/, ''),
+        },
+      },
     },
     server: {
-      allowedHosts: [
-        "blaster-basmar-frontend.isyhhh.easypanel.host",
-        "blaster-basmar-backend.isyhhh.easypanel.host",
-        "basmar.com.br",
-        "localhost"
-      ],
+      allowedHosts: true,
+      proxy: {
+        '/backend': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/backend/, ''),
+        },
+      },
     },
   },
 });
