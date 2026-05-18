@@ -12,4 +12,12 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  vite: {
+    preview: {
+      allowedHosts: ["blaster-basmar-frontend.isyhhh.easypanel.host", "basmar.com.br"],
+    },
+    server: {
+      allowedHosts: ["blaster-basmar-frontend.isyhhh.easypanel.host", "basmar.com.br"],
+    },
+  },
 });
