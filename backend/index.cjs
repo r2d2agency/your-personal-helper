@@ -45,12 +45,18 @@ async function runMigrations() {
 
 if (require.main === module) {
   runMigrations().then(() => {
-    if (process.env.START_HEALTH_SERVER === 'true') {
+    if (process.env.START_HEALTH_SERVER === 'true' || true) { // Force for now to ensure we have a backend listening
       const http = require('http');
       const port = process.env.PORT || 3001;
-      http.createServer((_, res) => {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ ok: true }));
+      http.createServer((req, res) => {
+        // Simple health check and allow host message
+        if (req.url === '/health') {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ ok: true }));
+        }
+        
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('Backend is running. Use /health for check.');
       }).listen(port, '0.0.0.0', () => console.log(`Backend ativo na porta ${port}`));
     }
   });
