@@ -18,6 +18,9 @@ export default defineConfig({
     },
     server: {
       allowedHosts: true,
+      hmr: {
+        host: "blaster-basmar-frontend.isyhhh.easypanel.host",
+      },
     },
   },
 });
