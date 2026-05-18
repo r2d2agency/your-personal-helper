@@ -18,13 +18,16 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
-# Copy the backend folder too if Easypanel expects it
 COPY --from=builder /app/backend ./backend
+COPY --from=builder /app/schema.sql ./schema.sql
 
 # Expose port
 EXPOSE 3000
 
-# For TanStack Start, we often use vite preview or a custom server
-# Since this is a Lovable project, we'll use vite preview as a robust way to serve the build
-# in a Node environment if no specific production server is configured.
-CMD ["npm", "run", "preview", "--", "--port", "3000", "--host"]
+# Set environment variables for Vite preview to work as a production server
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=3000
+
+# Start server (runs migrations first via npm start)
+CMD ["npm", "start", "--", "--port", "3000", "--host", "0.0.0.0"]
