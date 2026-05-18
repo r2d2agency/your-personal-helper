@@ -14,10 +14,18 @@ export default defineConfig({
   },
   vite: {
     preview: {
-      allowedHosts: ["blaster-basmar-frontend.isyhhh.easypanel.host", "basmar.com.br"],
+      allowedHosts: [
+        "blaster-basmar-frontend.isyhhh.easypanel.host",
+        "basmar.com.br",
+        "blaster-basmar-frontend.isyhhh.easypanel.host"
+      ],
     },
     server: {
-      allowedHosts: ["blaster-basmar-frontend.isyhhh.easypanel.host", "basmar.com.br"],
+      allowedHosts: [
+        "blaster-basmar-frontend.isyhhh.easypanel.host",
+        "basmar.com.br",
+        "blaster-basmar-frontend.isyhhh.easypanel.host"
+      ],
     },
   },
 });
