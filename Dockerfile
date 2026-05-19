@@ -29,5 +29,5 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-# O TanStack Start gera um servidor em dist/server/index.js
-CMD ["node", "dist/server/index.js"]
+# O comando preview do Vite funciona bem para rodar o build gerado
+CMD ["npm", "run", "preview"]
