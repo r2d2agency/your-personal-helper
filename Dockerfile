@@ -29,7 +29,7 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-# Usamos o script start do TanStack Start se disponível, ou o preview do Vite
-# Como o erro anterior mencionava a falta de arquivos no roteador, o preview costuma ser a melhor escolha
-# para servir o build estático gerado pelo TanStack Start em containers.
+# Servimos os arquivos estáticos do cliente usando o preview do Vite
+# O TanStack Start em containers geralmente exige um servidor Node robusto, mas para visualização básica
+# do frontend o preview é suficiente.
 CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "3000"]
