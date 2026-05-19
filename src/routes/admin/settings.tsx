@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { signUp, listAdmins } from "@/lib/auth.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { UserPlus, Mail, Lock, User, Shield, Trash2 } from "lucide-react";
+import { UserPlus, Mail, Lock, User, Shield } from "lucide-react";
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettings,
@@ -16,53 +18,27 @@ function AdminSettings() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [role, setRole] = useState("admin");
   const [loading, setLoading] = useState(false);
-  const [admins, setAdmins] = useState<any[]>([]);
 
-  useEffect(() => {
-    fetchAdmins();
-  }, []);
+  const queryClient = useQueryClient();
+  const fetchAdmins = useServerFn(listAdmins);
+  const doSignUp = useServerFn(signUp);
 
-  const fetchAdmins = async () => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("role", "admin");
-    
-    if (error) {
-      toast.error("Erro ao carregar administradores");
-    } else {
-      setAdmins(data || []);
-    }
-  };
+  const { data: admins = [] } = useQuery({
+    queryKey: ["admins"],
+    queryFn: () => fetchAdmins(),
+  });
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      // In a real production app, we should use a Supabase Edge Function to create users
-      // safely without exposing service_role keys. 
-      // For now, we'll use the auth.signUp method which creates a user and a profile via trigger (usually).
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-            role: role,
-          },
-        },
-      });
-
-      if (error) throw error;
-
-      toast.success("Usuário criado com sucesso! Verifique o e-mail se necessário.");
+      await doSignUp({ data: { email, password, fullName, role: "admin" } });
+      toast.success("Usuário criado com sucesso!");
       setEmail("");
       setPassword("");
       setFullName("");
-      fetchAdmins();
+      queryClient.invalidateQueries({ queryKey: ["admins"] });
     } catch (error: any) {
       toast.error(error.message || "Erro ao criar usuário");
     } finally {
@@ -84,9 +60,7 @@ function AdminSettings() {
               <UserPlus className="h-5 w-5 text-primary" />
               Novo Administrador
             </CardTitle>
-            <CardDescription>
-              Crie uma nova conta de acesso para o painel administrativo.
-            </CardDescription>
+            <CardDescription>Crie uma nova conta de acesso ao painel.</CardDescription>
           </CardHeader>
           <form onSubmit={handleCreateUser}>
             <CardContent className="space-y-4">
@@ -94,9 +68,9 @@ function AdminSettings() {
                 <Label htmlFor="name">Nome Completo</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input 
-                    id="name" 
-                    placeholder="Ex: João Silva" 
+                  <Input
+                    id="name"
+                    placeholder="Ex: João Silva"
                     className="pl-10"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
@@ -108,10 +82,10 @@ function AdminSettings() {
                 <Label htmlFor="email">E-mail</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="email@exemplo.com" 
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="email@exemplo.com"
                     className="pl-10"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -123,10 +97,10 @@ function AdminSettings() {
                 <Label htmlFor="password">Senha</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input 
-                    id="password" 
-                    type="password" 
-                    placeholder="••••••••" 
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
                     className="pl-10"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -150,24 +124,22 @@ function AdminSettings() {
               <Shield className="h-5 w-5 text-primary" />
               Administradores Ativos
             </CardTitle>
-            <CardDescription>
-              Lista de usuários com acesso ao sistema.
-            </CardDescription>
+            <CardDescription>Lista de usuários com acesso ao sistema.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {admins.length === 0 ? (
                 <p className="text-center py-4 text-muted-foreground">Nenhum administrador encontrado.</p>
               ) : (
-                admins.map((admin) => (
+                admins.map((admin: any) => (
                   <div key={admin.id} className="flex items-center justify-between p-3 border rounded-lg bg-white">
                     <div className="flex items-center gap-3">
                       <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                        {admin.full_name?.charAt(0) || "U"}
+                        {(admin.full_name || admin.email)?.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="text-sm font-medium leading-none">{admin.full_name}</p>
-                        <p className="text-xs text-muted-foreground mt-1">Cargo: {admin.role}</p>
+                        <p className="text-sm font-medium leading-none">{admin.full_name || admin.email}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{admin.email} · {admin.role}</p>
                       </div>
                     </div>
                   </div>
