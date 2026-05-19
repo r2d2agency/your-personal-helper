@@ -18,6 +18,7 @@ WORKDIR /app
 
 # Copiar apenas os artefatos necessários
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
 # Opcional: Copiar fontes para depuração se necessário
@@ -29,6 +30,5 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-# O comando preview do Vite funciona bem para rodar o build gerado
-# Especificamos o outDir dist/client pois o TanStack Start separa client e server
-CMD ["npm", "run", "preview"]
+# Servidor Node de produção: assets estáticos + SSR compilado do TanStack Start
+CMD ["npm", "run", "start"]
