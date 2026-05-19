@@ -15,7 +15,21 @@ function createSupabaseAdminClient() {
       ...(!SUPABASE_SERVICE_ROLE_KEY ? ['SUPABASE_SERVICE_ROLE_KEY'] : []),
     ];
     console.warn(`[Supabase Admin] Missing environment variable(s): ${missing.join(', ')}. Admin features will be disabled.`);
-    return null as any;
+    
+    return {
+      auth: {
+        admin: {
+          getUserById: async () => ({ data: { user: null }, error: null }),
+        }
+      },
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            single: async () => ({ data: null, error: null }),
+          }),
+        }),
+      }),
+    } as any;
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
