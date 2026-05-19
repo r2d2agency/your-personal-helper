@@ -30,4 +30,5 @@ ENV HOST=0.0.0.0
 ENV PORT=3000
 
 # O comando preview do Vite funciona bem para rodar o build gerado
+# Especificamos o outDir dist/client pois o TanStack Start separa client e server
 CMD ["npm", "run", "preview"]
