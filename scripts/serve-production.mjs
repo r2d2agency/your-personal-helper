@@ -4,13 +4,14 @@ import { extname, join, normalize, resolve, sep } from "node:path";
 import { Readable } from "node:stream";
 
 // Polyfill WebSocket for Node 22 if needed by Supabase
-if (typeof globalThis.WebSocket === "undefined" && typeof WebSocket !== "undefined") {
+if (typeof WebSocket !== "undefined") {
   globalThis.WebSocket = WebSocket;
-} else if (typeof globalThis.WebSocket === "undefined") {
-  // If even the global WebSocket is missing in Node 22 (unlikely but safe)
+  global.WebSocket = WebSocket;
+} else {
   try {
     const { WebSocket: WS } = await import("undici");
     globalThis.WebSocket = WS;
+    global.WebSocket = WS;
   } catch (e) {
     console.warn("Could not polyfill WebSocket:", e.message);
   }
