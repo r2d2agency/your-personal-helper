@@ -13,9 +13,10 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    define: {
+      "process.versions.node": "undefined",
+    },
     preview: {
-      // Self-hosting/Easypanel: allow any domain attached to the frontend service.
-      // The backend service is plain Node and does not use Vite.
       allowedHosts: true,
     },
     server: {
