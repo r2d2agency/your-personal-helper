@@ -1,49 +1,42 @@
 import { createFileRoute, Outlet, redirect, Link, useLocation } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
-import { 
-  LayoutDashboard, 
-  Settings, 
-  Image as ImageIcon, 
-  Grid, 
-  Package, 
-  GraduationCap, 
-  MapPin, 
+import { getMe, signOut } from "@/lib/auth.functions";
+import { useServerFn } from "@tanstack/react-start";
+import {
+  LayoutDashboard,
+  Settings,
+  Image as ImageIcon,
+  Grid,
+  Package,
+  GraduationCap,
+  MapPin,
   LogOut,
   ChevronRight,
-  Menu
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { 
-  Sidebar, 
-  SidebarContent, 
-  SidebarGroup, 
-  SidebarGroupContent, 
-  SidebarGroupLabel, 
-  SidebarMenu, 
-  SidebarMenuButton, 
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
   SidebarHeader,
-  SidebarFooter
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
   beforeLoad: async ({ location }) => {
-    // Evita loop se já estiver na página de login
-    if (location.pathname === "/admin/login") {
-      return;
-    }
-
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
+    if (location.pathname === "/admin/login") return;
+    const { user } = await getMe();
+    if (!user) {
       throw redirect({
         to: "/admin/login",
-        search: {
-          redirect: location.href,
-        },
+        search: { redirect: location.href },
       });
     }
   },
@@ -63,17 +56,18 @@ const menuItems = [
 
 function AdminLayout() {
   const location = useLocation();
+  const doSignOut = useServerFn(signOut);
 
-  // Renderiza apenas o Outlet (sem sidebar) na tela de login
   if (location.pathname === "/admin/login") {
     return <Outlet />;
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await doSignOut();
     toast.success("Logout realizado");
     window.location.href = "/admin/login";
   };
+
 
   return (
     <SidebarProvider>
