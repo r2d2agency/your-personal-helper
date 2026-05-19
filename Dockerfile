@@ -29,7 +29,5 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-# Servimos os arquivos estáticos do cliente usando o preview do Vite
-# O TanStack Start em containers geralmente exige um servidor Node robusto, mas para visualização básica
-# do frontend o preview é suficiente.
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "3000"]
+# O TanStack Start gera um servidor em dist/server/index.js
+CMD ["node", "dist/server/index.js"]
