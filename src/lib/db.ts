@@ -6,12 +6,19 @@ const { Pool } = pg;
 const connectionString = process.env.DATABASE_URL || import.meta.env.VITE_DATABASE_URL;
 
 if (!connectionString) {
-  console.warn('DATABASE_URL is not defined. PostgreSQL connection will fail.');
+  console.error('ERRO CRÍTICO: DATABASE_URL não definida.');
 }
 
 export const pool = new Pool({
   connectionString,
-  ssl: connectionString?.includes('sslmode=disable') ? false : { rejectUnauthorized: false },
+  ssl: !connectionString || connectionString.includes('localhost') || connectionString.includes('127.0.0.1') || connectionString.includes('sslmode=disable') ? false : { rejectUnauthorized: false },
 });
 
-export const query = (text: string, params?: any[]) => pool.query(text, params);
+export const query = async (text: string, params?: any[]) => {
+  try {
+    return await pool.query(text, params);
+  } catch (error) {
+    console.error(`Erro na query SQL: ${text}`, error);
+    throw error;
+  }
+};
