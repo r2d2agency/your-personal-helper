@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getHeader, setCookie, deleteCookie } from "@tanstack/react-start/server";
+import { getCookie, setCookie, deleteCookie } from "@tanstack/react-start/server";
+
 import { query } from "./db";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -44,15 +45,14 @@ function setAuthCookie(token: string) {
 
 function readToken(): JwtPayload | null {
   try {
-    const cookieHeader = getHeader("cookie") || "";
-    const match = cookieHeader.split(/;\s*/).find((c) => c.startsWith(`${COOKIE_NAME}=`));
-    if (!match) return null;
-    const token = decodeURIComponent(match.split("=")[1]);
+    const token = getCookie(COOKIE_NAME);
+    if (!token) return null;
     return jwt.verify(token, JWT_SECRET) as JwtPayload;
   } catch {
     return null;
   }
 }
+
 
 export const signUp = createServerFn({ method: "POST" })
   .inputValidator((d: { email: string; password: string; fullName?: string; role?: string }) => d)
