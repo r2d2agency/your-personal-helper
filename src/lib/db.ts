@@ -6,7 +6,7 @@ const { Pool } = pg;
 const connectionString = process.env.DATABASE_URL || import.meta.env.VITE_DATABASE_URL;
 
 if (!connectionString) {
-  console.error('ERRO CRÍTICO: DATABASE_URL não definida.');
+  console.warn('AVISO: DATABASE_URL não definida. O banco de dados não funcionará corretamente.');
 }
 
 export const pool = new Pool({

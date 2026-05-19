@@ -73,7 +73,7 @@ export default {
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
-      console.error("ERRO NO SSR FETCH:", error);
+      console.error("ERRO NO SSR FETCH:", error instanceof Error ? { message: error.message, stack: error.stack } : error);
       return brandedErrorResponse();
     }
   },
