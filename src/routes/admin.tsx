@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect, Link } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, Link, useLocation } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   LayoutDashboard, 
@@ -62,6 +62,13 @@ const menuItems = [
 ];
 
 function AdminLayout() {
+  const location = useLocation();
+
+  // Renderiza apenas o Outlet (sem sidebar) na tela de login
+  if (location.pathname === "/admin/login") {
+    return <Outlet />;
+  }
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast.success("Logout realizado");
