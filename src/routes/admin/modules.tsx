@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { getModules } from "@/lib/cms-queries";
+import { updateModule as updateModuleFn, swapModuleOrder } from "@/lib/modules.functions";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
 import {
   Card,
   CardContent,
@@ -30,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
+
 import { toast } from "sonner";
 import {
   Image as ImageIcon,
@@ -79,7 +81,10 @@ type CmsModule = {
 
 function ModulesManager() {
   const fetchModules = useServerFn(getModules);
+  const doUpdate = useServerFn(updateModuleFn);
+  const doSwap = useServerFn(swapModuleOrder);
   const queryClient = useQueryClient();
+
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<CmsModule | null>(null);
 
@@ -102,11 +107,7 @@ function ModulesManager() {
   const updateModule = useMutation({
     mutationFn: async (patch: Partial<CmsModule> & { id: number }) => {
       const { id, ...rest } = patch;
-      const { error } = await supabase
-        .from("cms_modules")
-        .update(rest)
-        .eq("id", id);
-      if (error) throw error;
+      await doUpdate({ data: { id, patch: rest } });
     },
     onSuccess: () => {
       invalidate();
@@ -116,14 +117,17 @@ function ModulesManager() {
   });
 
   const swapOrder = async (a: CmsModule, b: CmsModule) => {
-    const aOrder = a.menu_order ?? 0;
-    const bOrder = b.menu_order ?? 0;
-    await Promise.all([
-      supabase.from("cms_modules").update({ menu_order: bOrder }).eq("id", a.id),
-      supabase.from("cms_modules").update({ menu_order: aOrder }).eq("id", b.id),
-    ]);
+    await doSwap({
+      data: {
+        aId: a.id,
+        aOrder: a.menu_order ?? 0,
+        bId: b.id,
+        bOrder: b.menu_order ?? 0,
+      },
+    });
     invalidate();
   };
+
 
   const move = (index: number, dir: -1 | 1) => {
     const target = modules[index + dir];
