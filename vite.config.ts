@@ -14,7 +14,13 @@ export default defineConfig({
   },
   vite: {
     preview: {
-      allowedHosts: true,
+      allowedHosts: [
+        'blaster-basmar-frontend.isyhhh.easypanel.host',
+        'blaster-basmar-backend.isyhhh.easypanel.host',
+        'basmar.com.br',
+        '.easypanel.host', // Permite qualquer subdomínio do easypanel
+        'localhost',
+      ],
       proxy: {
         '/backend': {
           target: 'http://localhost:3001',
@@ -25,13 +31,6 @@ export default defineConfig({
     },
     server: {
       allowedHosts: true,
-      proxy: {
-        '/backend': {
-          target: 'http://localhost:3001',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/backend/, ''),
-        },
-      },
     },
   },
 });
