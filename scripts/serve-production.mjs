@@ -111,15 +111,17 @@ const workerModule = await import(serverEntry);
 const worker = workerModule.default;
 
 // Inject project secrets into process.env if they are missing
+if (!process.env.DATABASE_URL) {
+  // We use the direct connection string for the server-side PG pool
+  process.env.DATABASE_URL = "postgresql://postgres.mtthdfprwhvnwwjblwnr:4764345f-5138-4c11-aa10-34273efe43b9@aws-1-us-west-2.pooler.supabase.com:6543/postgres";
+}
+
+// These are still needed for the Supabase Auth client to work in the frontend/shared code
 if (!process.env.SUPABASE_URL) {
   process.env.SUPABASE_URL = "https://mtthdfprwhvnwwjblwnr.supabase.co";
 }
 if (!process.env.SUPABASE_PUBLISHABLE_KEY) {
   process.env.SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10dGhkZnByd2h2bnd3amJsd25yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NjU4NDUsImV4cCI6MjA5NDU0MTg0NX0.lf3KYN8biKPuaP5CwgWcpC82jZXyZhoBf4Q0js4VjPI";
-}
-if (!process.env.DATABASE_URL) {
-  // We use the direct connection string for the server-side PG pool
-  process.env.DATABASE_URL = "postgresql://postgres.mtthdfprwhvnwwjblwnr:4764345f-5138-4c11-aa10-34273efe43b9@aws-1-us-west-2.pooler.supabase.com:6543/postgres";
 }
 
 if (!worker || typeof worker.fetch !== "function") {
