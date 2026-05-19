@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,14 @@ import { toast } from "sonner";
 import { GraduationCap } from "lucide-react";
 
 export const Route = createFileRoute("/admin/login")({
+  beforeLoad: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      throw redirect({
+        to: "/admin",
+      });
+    }
+  },
   component: AdminLogin,
 });
 

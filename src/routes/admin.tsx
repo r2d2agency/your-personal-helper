@@ -30,11 +30,20 @@ import {
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
-  beforeLoad: async () => {
+  beforeLoad: async ({ location }) => {
+    // Evita loop se já estiver na página de login
+    if (location.pathname === "/admin/login") {
+      return;
+    }
+
     const { data: { session } } = await supabase.auth.getSession();
+    
     if (!session) {
       throw redirect({
         to: "/admin/login",
+        search: {
+          redirect: location.href,
+        },
       });
     }
   },
