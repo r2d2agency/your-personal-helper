@@ -24,4 +24,4 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-CMD ["sh", "-c", "npm run preview -- --host 0.0.0.0 --port ${PORT:-3000}"]
+CMD ["sh", "-c", "npm run preview -- --host 0.0.0.0 --port ${PORT:-3000} --allowed-hosts true"]
