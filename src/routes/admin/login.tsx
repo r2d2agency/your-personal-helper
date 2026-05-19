@@ -24,24 +24,46 @@ function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      if (isSignUp) {
+        const { error, data } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              role: 'admin', // Default role for new admin users
+            }
+          }
+        });
 
-      if (error) throw error;
+        if (error) throw error;
+        
+        if (data?.user && !data.session) {
+          toast.success("Cadastro realizado! Verifique seu email para confirmar a conta.");
+        } else {
+          toast.success("Conta criada e login realizado com sucesso!");
+          navigate({ to: "/admin" });
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-      toast.success("Login realizado com sucesso!");
-      navigate({ to: "/admin" });
+        if (error) throw error;
+
+        toast.success("Login realizado com sucesso!");
+        navigate({ to: "/admin" });
+      }
     } catch (error: any) {
-      toast.error(error.message || "Erro ao fazer login");
+      toast.error(error.message || `Erro ao ${isSignUp ? 'criar conta' : 'fazer login'}`);
     } finally {
       setLoading(false);
     }
@@ -58,11 +80,13 @@ function AdminLogin() {
           </div>
           <CardTitle className="text-2xl font-bold">Basmar CMS</CardTitle>
           <CardDescription>
-            Entre com suas credenciais para gerenciar o site
+            {isSignUp 
+              ? "Crie sua conta para começar a gerenciar o site" 
+              : "Entre com suas credenciais para gerenciar o site"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleAuth} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -87,8 +111,22 @@ function AdminLogin() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Entrando..." : "Entrar"}
+              {loading 
+                ? (isSignUp ? "Criando conta..." : "Entrando...") 
+                : (isSignUp ? "Criar conta" : "Entrar")}
             </Button>
+            
+            <div className="text-center text-sm mt-4">
+              <button 
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="text-primary hover:underline font-medium"
+              >
+                {isSignUp 
+                  ? "Já tem uma conta? Entre aqui" 
+                  : "Não tem uma conta? Crie uma agora"}
+              </button>
+            </div>
           </form>
         </CardContent>
       </Card>
