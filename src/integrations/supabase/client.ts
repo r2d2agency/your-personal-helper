@@ -13,9 +13,26 @@ function createSupabaseClient() {
       ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
       ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
     ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
-    console.error(`[Supabase] ${message}`);
-    throw new Error(message);
+    console.warn(`[Supabase] Missing environment variable(s): ${missing.join(', ')}. Supabase features will be disabled.`);
+    
+    // Return a dummy client to prevent crashes during SSR or initialization
+    return {
+      auth: {
+        getSession: async () => ({ data: { session: null }, error: null }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+        signOut: async () => ({ error: null }),
+      },
+      from: () => ({
+        select: () => ({
+          order: () => ({
+            eq: () => ({
+              single: async () => ({ data: null, error: null }),
+              then: (cb: any) => cb({ data: [], error: null }),
+            }),
+          }),
+        }),
+      }),
+    } as any;
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
