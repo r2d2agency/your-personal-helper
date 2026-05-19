@@ -14,20 +14,9 @@ export default defineConfig({
   },
   vite: {
     preview: {
-      allowedHosts: [
-        'blaster-basmar-frontend.isyhhh.easypanel.host',
-        'blaster-basmar-backend.isyhhh.easypanel.host',
-        'basmar.com.br',
-        '.easypanel.host', // Permite qualquer subdomínio do easypanel
-        'localhost',
-      ],
-      proxy: {
-        '/backend': {
-          target: 'http://localhost:3001',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/backend/, ''),
-        },
-      },
+      // Self-hosting/Easypanel: allow any domain attached to the frontend service.
+      // The backend service is plain Node and does not use Vite.
+      allowedHosts: true,
     },
     server: {
       allowedHosts: true,
