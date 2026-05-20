@@ -1,14 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getCookie, setCookie, deleteCookie } from "@tanstack/react-start/server";
-
 import { query } from "./db";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-
-const COOKIE_NAME = "basmar_auth";
-const JWT_SECRET = process.env.JWT_SECRET || process.env.DATABASE_URL || "change-me-in-production-please";
-
-type JwtPayload = { sub: string; email: string; role: string };
+import { readToken, signToken, setAuthCookie, deleteAuthCookie } from "./auth-utils.server";
 
 let schemaReady: Promise<void> | null = null;
 async function ensureSchema() {
@@ -28,31 +21,6 @@ async function ensureSchema() {
   }
   return schemaReady;
 }
-
-function signToken(payload: JwtPayload) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
-}
-
-function setAuthCookie(token: string) {
-  setCookie(COOKIE_NAME, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: true,
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
-  });
-}
-
-function readToken(): JwtPayload | null {
-  try {
-    const token = getCookie(COOKIE_NAME);
-    if (!token) return null;
-    return jwt.verify(token, JWT_SECRET) as JwtPayload;
-  } catch {
-    return null;
-  }
-}
-
 
 export const signUp = createServerFn({ method: "POST" })
   .inputValidator((d: { email: string; password: string; fullName?: string; role?: string }) => d)
@@ -97,7 +65,7 @@ export const signIn = createServerFn({ method: "POST" })
   });
 
 export const signOut = createServerFn({ method: "POST" }).handler(async () => {
-  deleteCookie(COOKIE_NAME, { path: "/" });
+  deleteAuthCookie();
   return { ok: true };
 });
 
