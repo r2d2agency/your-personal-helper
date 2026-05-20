@@ -24,7 +24,7 @@ async function ensureSchema() {
             created_at TIMESTAMPTZ NOT NULL DEFAULT now()
           );
         `);
-      } catch (e) {
+      } catch (e: any) {
         console.warn('Erro ao criar schema (ignorado):', e.message);
         schemaReady = null;
       }
