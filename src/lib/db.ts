@@ -23,7 +23,15 @@ pool.on('error', (err) => {
 });
 
 export const query = async (text: string, params?: any[]) => {
+  // Em ambiente de preview (Lovable), ignoramos erros de conexão com localhost/127.0.0.1
+  // para permitir que o SSR carregue sem travar a interface.
+  const isPreview = typeof window === 'undefined' && (!connectionString || connectionString.includes('127.0.0.1') || connectionString.includes('localhost'));
+
   if (!connectionString) {
+    if (isPreview) {
+      console.warn('Preview: Ignorando erro de query por falta de DATABASE_URL');
+      return { rows: [], rowCount: 0 };
+    }
     console.error('Tentativa de query sem DATABASE_URL configurada.');
     throw new Error('Database not configured');
   }
@@ -31,6 +39,11 @@ export const query = async (text: string, params?: any[]) => {
   try {
     return await pool.query(text, params);
   } catch (error) {
+    if (isPreview && (error as any).code === 'ECONNREFUSED') {
+      console.warn('Preview: Ignorando ECONNREFUSED no SSR');
+      return { rows: [], rowCount: 0 };
+    }
+    
     console.error(`Erro na query SQL: ${text}`, error);
     // Se for erro de conexão, dá uma dica sobre o Easypanel
     if ((error as any).code === 'ECONNREFUSED' || (error as any).code === 'ENOTFOUND') {

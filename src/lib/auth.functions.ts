@@ -5,18 +5,29 @@ import { readToken, signToken, setAuthCookie, deleteAuthCookie } from "./auth-ut
 
 let schemaReady: Promise<void> | null = null;
 async function ensureSchema() {
+  // No preview do Lovable, evitamos tentar criar o schema se não houver conexão
+  const connectionString = process.env.DATABASE_URL || "";
+  const isPreview = !connectionString || connectionString.includes('127.0.0.1') || connectionString.includes('localhost');
+
+  if (isPreview) return;
+
   if (!schemaReady) {
     schemaReady = (async () => {
-      await query(`
-        CREATE TABLE IF NOT EXISTS admin_users (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          email TEXT UNIQUE NOT NULL,
-          password_hash TEXT NOT NULL,
-          full_name TEXT,
-          role TEXT NOT NULL DEFAULT 'admin',
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-        );
-      `);
+      try {
+        await query(`
+          CREATE TABLE IF NOT EXISTS admin_users (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            full_name TEXT,
+            role TEXT NOT NULL DEFAULT 'admin',
+            created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+          );
+        `);
+      } catch (e) {
+        console.warn('Erro ao criar schema (ignorado):', e.message);
+        schemaReady = null;
+      }
     })();
   }
   return schemaReady;
