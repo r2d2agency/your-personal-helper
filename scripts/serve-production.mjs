@@ -108,16 +108,9 @@ async function sendWebResponse(res, webResponse) {
   Readable.fromWeb(webResponse.body).pipe(res);
 }
 
-// Inject project secrets into process.env if they are missing
-if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = "postgresql://postgres.mtthdfprwhvnwwjblwnr:4764345f-5138-4c11-aa10-34273efe43b9@aws-1-us-west-2.pooler.supabase.com:6543/postgres";
-}
-if (!process.env.SUPABASE_URL) {
-  process.env.SUPABASE_URL = "https://mtthdfprwhvnwwjblwnr.supabase.co";
-}
-if (!process.env.SUPABASE_PUBLISHABLE_KEY) {
-  process.env.SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10dGhkZnByd2h2bnd3amJsd25yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NjU4NDUsImV4cCI6MjA5NDU0MTg0NX0.lf3KYN8biKPuaP5CwgWcpC82jZXyZhoBf4Q0js4VjPI";
-}
+// We use the DATABASE_URL environment variable from the system.
+// No hardcoded Supabase fallbacks.
+
 
 if (!existsSync(serverEntry)) {
   console.error(`Build do servidor não encontrado em ${serverEntry}. Execute npm run build antes de iniciar.`);
